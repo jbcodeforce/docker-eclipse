@@ -15,8 +15,18 @@ Clone this repository and build your local image using the provided `docker buil
 This docker install, java, eclipse, ssh, X11 library...
 
 ## Run
-To start the container, use the following script
+To start the container, you can modify the following script to use your image name and then:
 ```
 ./eclipse-2018.sh
 ```
+
+The commands performed is to get the ipaddress, set the DISPLAY variable so eclipse in the conteainer which use X11 will display all the windows on my mac and call docker run by mounting the X11 socket, the workspace 
+```
+ipad=$(ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
+xhost + $ipad
+export DISPLAY=$ipad:0
+docker run  -ti -rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/home/developer/eclipse-workspace jbcodeforce/eclipse eclipse
+```
 The ubuntu image has ssh configured to allow X11 Forwarding.
+
+The eclipse is very minimum, I may need to see how to add eclipse plugins in the Dockerfile, but to let you add plugins using the marketplace we need to mount a local folder to keep the plugins between session and the /home/developer/.eclipse within the container.
